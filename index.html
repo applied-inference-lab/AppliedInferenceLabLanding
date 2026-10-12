@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manuscript Reproducibility Review | The Applied Inference Lab</title>
+<meta name="description" content="Independent reproduction and statistical review of your manuscript. We rebuild your analysis, check every reported number, and review whether your conclusions hold. $99.99 per manuscript.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600;7..72,700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F6F8FB;
+    --sheet: #FFFFFF;
+    --ink: #17202E;
+    --ink-soft: #4E596B;
+    --rule: #D6DCE6;
+    --match: #1E7356;
+    --match-bg: #E3F2EC;
+    --differs: #A8203F;
+    --differs-bg: #F8E4E9;
+    --focus: #2F5FD0;
+
+    --serif: "Literata", Georgia, "Times New Roman", serif;
+    --sans: "Public Sans", "Segoe UI", system-ui, sans-serif;
+
+    --step--1: 0.875rem;
+    --step-0: 1.0625rem;
+    --step-1: 1.3125rem;
+    --step-2: 1.75rem;
+    --step-3: clamp(2.1rem, 1.4rem + 3vw, 3.4rem);
+
+    --measure: 66ch;
+    --gutter: clamp(16px, 4vw, 40px);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: var(--step-0);
+    line-height: 1.6;
+    font-optical-sizing: auto;
+  }
+  a { color: inherit; text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
+  a:hover { text-decoration-thickness: 2px; }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 var(--gutter); }
+
+  /* Header */
+  .site-header { border-bottom: 1px solid var(--rule); background: var(--paper); }
+  .site-header .wrap {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; min-height: 68px; flex-wrap: wrap; padding-top: 10px; padding-bottom: 10px;
+  }
+  .wordmark { font-family: var(--serif); font-weight: 600; font-size: 1.1rem; text-decoration: none; letter-spacing: -0.01em; }
+  .site-nav { display: flex; align-items: center; gap: 22px; font-family: var(--sans); font-size: var(--step--1); }
+  .site-nav a.plain { text-decoration: none; color: var(--ink-soft); }
+  .site-nav a.plain:hover { color: var(--ink); text-decoration: underline; }
+
+  .btn {
+    display: inline-block; font-family: var(--sans); font-weight: 600; font-size: 0.95rem;
+    text-decoration: none; padding: 0.7em 1.15em; border-radius: 6px; border: 1.5px solid var(--ink);
+    line-height: 1.2; text-align: center;
+  }
+  .btn-primary { background: var(--ink); color: #fff; }
+  .btn-primary:hover { background: #2A3547; border-color: #2A3547; text-decoration: none; }
+  .btn-secondary { background: transparent; color: var(--ink); }
+  .btn-secondary:hover { background: var(--sheet); text-decoration: none; }
+  .btn-small { font-size: var(--step--1); padding: 0.5em 0.9em; }
+
+  /* Hero */
+  .hero { padding: clamp(48px, 8vw, 96px) 0 clamp(48px, 7vw, 88px); }
+  .hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(32px, 5vw, 64px); align-items: center; }
+  .hero h1 {
+    font-size: var(--step-3); line-height: 1.08; letter-spacing: -0.022em; font-weight: 600;
+    margin: 0 0 0.5em; max-width: 14ch;
+  }
+  .hero .lede { font-size: var(--step-1); line-height: 1.5; color: var(--ink-soft); margin: 0 0 1.6em; max-width: 34ch; }
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .hero-note { font-family: var(--sans); font-size: var(--step--1); color: var(--ink-soft); margin: 1.1em 0 0; }
+
+  /* The ledger: the page's one memorable element */
+  .ledger {
+    background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px;
+    box-shadow: 0 1px 0 var(--rule), 0 18px 40px -24px rgba(23, 32, 46, 0.35);
+    overflow: hidden;
+  }
+  .ledger-head {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+    padding: 16px 20px 12px; border-bottom: 1px solid var(--rule);
+    font-family: var(--sans); font-size: var(--step--1); color: var(--ink-soft);
+  }
+  .ledger-head strong { color: var(--ink); font-weight: 600; }
+  .ledger table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums lining-nums; }
+  .ledger th {
+    font-family: var(--sans); font-weight: 500; font-size: 0.8rem; color: var(--ink-soft);
+    text-align: left; padding: 10px 20px 8px; border-bottom: 1px solid var(--rule);
+  }
+  .ledger th.num, .ledger td.num { text-align: right; }
+  .ledger td { padding: 12px 20px; border-bottom: 1px solid var(--rule); vertical-align: top; font-size: 0.98rem; }
+  .ledger tr:last-child td { border-bottom: 0; }
+  .ledger td.item { color: var(--ink); }
+  .ledger td.item span { display: block; font-family: var(--sans); font-size: 0.78rem; color: var(--ink-soft); }
+  .ledger td.num { white-space: nowrap; }
+  .status {
+    display: inline-block; font-family: var(--sans); font-size: 0.78rem; font-weight: 600;
+    padding: 0.2em 0.6em; border-radius: 999px; white-space: nowrap;
+  }
+  .status.match { color: var(--match); background: var(--match-bg); }
+  .status.differs { color: var(--differs); background: var(--differs-bg); }
+  .ledger tr.differs-row td.num.reproduced { color: var(--differs); font-weight: 600; }
+  .ledger-foot { padding: 12px 20px 16px; border-top: 1px solid var(--rule); font-family: var(--sans); font-size: 0.8rem; color: var(--ink-soft); }
+
+  /* One orchestrated load sequence: each row's check resolves in turn */
+  @media (prefers-reduced-motion: no-preference) {
+    .js .ledger tbody td.reproduced, .js .ledger tbody td.check { opacity: 0; }
+    .js .ledger.run tbody td.reproduced, .js .ledger.run tbody td.check {
+      animation: resolve 420ms ease-out forwards;
+      animation-delay: calc(350ms + var(--i) * 380ms);
+    }
+    @keyframes resolve { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+  }
+
+
+  /* Evidence strip */
+  .evidence { border-top: 1px solid var(--rule); padding: clamp(40px, 6vw, 64px) 0; }
+  .evidence .wrap { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(24px, 5vw, 64px); align-items: start; }
+  .evidence .claim { font-size: var(--step-2); line-height: 1.25; letter-spacing: -0.012em; font-weight: 600; margin: 0; max-width: 20ch; }
+  .evidence .support p { margin: 0 0 0.9em; color: var(--ink-soft); max-width: 58ch; }
+  .evidence .support p:last-child { margin-bottom: 0; }
+  .evidence .source { font-family: var(--sans); font-size: var(--step--1); }
+  @media (max-width: 760px) { .evidence .wrap { grid-template-columns: 1fr; } }
+
+  /* Sections */
+  section.block { padding: clamp(56px, 8vw, 96px) 0; border-top: 1px solid var(--rule); }
+  section.block.alt { background: var(--sheet); }
+  .block h2 { font-size: var(--step-2); line-height: 1.2; letter-spacing: -0.012em; font-weight: 600; margin: 0 0 0.6em; }
+  .block .intro { color: var(--ink-soft); max-width: var(--measure); margin: 0 0 2.2em; }
+  .block h3 { font-size: var(--step-1); line-height: 1.3; font-weight: 600; margin: 0 0 0.45em; }
+  .block p { max-width: var(--measure); }
+
+  /* Steps: a real sequence, so numbered */
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(24px, 4vw, 48px); counter-reset: step; }
+  .steps li { counter-increment: step; position: relative; padding-top: 52px; }
+  .steps li::before {
+    content: counter(step);
+    position: absolute; top: 0; left: 0; width: 36px; height: 36px; border-radius: 50%;
+    border: 1.5px solid var(--ink); display: grid; place-items: center;
+    font-family: var(--sans); font-weight: 600; font-size: 0.95rem;
+  }
+  .steps p { margin: 0; color: var(--ink-soft); }
+
+  /* Two stages */
+  .stages { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(24px, 4vw, 56px); }
+  .stage { border-left: 3px solid var(--ink); padding-left: 22px; }
+  .stage .when { font-family: var(--sans); font-size: var(--step--1); color: var(--ink-soft); margin: 0 0 0.4em; }
+  .stage ul { margin: 0.8em 0 0; padding-left: 1.1em; color: var(--ink-soft); }
+  .stage li { margin-bottom: 0.4em; }
+  .stage li::marker { color: var(--ink); }
+  .stages-note { margin-top: 2.4em; color: var(--ink-soft); }
+
+  /* Pricing */
+  .pricing { display: grid; grid-template-columns: 1.25fr 1fr 1fr; gap: 20px; align-items: stretch; }
+  .plan { border: 1px solid var(--rule); border-radius: 10px; padding: 26px 24px; background: var(--paper); display: flex; flex-direction: column; }
+  .plan.main { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .plan.main .muted { color: #C3CBD8; }
+  .plan h3 { margin-bottom: 0.2em; }
+  .plan .price { font-size: 2.6rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; margin: 0.25em 0 0.1em; font-variant-numeric: lining-nums; }
+  .plan .price-sub { font-family: var(--sans); font-size: var(--step--1); margin: 0 0 1.2em; }
+  .muted { color: var(--ink-soft); }
+  .plan ul { margin: 0 0 1.6em; padding-left: 1.1em; }
+  .plan li { margin-bottom: 0.45em; }
+  .plan .btn { margin-top: auto; align-self: flex-start; }
+  .plan.main .btn-primary { background: #fff; color: var(--ink); border-color: #fff; }
+  .plan.main .btn-primary:hover { background: #E6EBF2; border-color: #E6EBF2; }
+
+  /* Data access */
+  .data-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  .data-card { background: var(--paper); border: 1px solid var(--rule); border-radius: 10px; padding: 24px; }
+  .data-card p { margin: 0; color: var(--ink-soft); }
+  .data-card h3 { font-size: 1.15rem; }
+  .block.alt .data-card { background: var(--paper); }
+
+  /* FAQ */
+  .faq { max-width: 760px; }
+  .faq details { border-bottom: 1px solid var(--rule); }
+  .faq details:first-of-type { border-top: 1px solid var(--rule); }
+  .faq summary {
+    cursor: pointer; list-style: none; padding: 18px 36px 18px 0; position: relative;
+    font-weight: 600; font-size: 1.08rem;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after {
+    content: ""; position: absolute; right: 6px; top: 50%; width: 10px; height: 10px;
+    border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink);
+    transform: translateY(-70%) rotate(45deg); transition: transform 160ms ease;
+  }
+  .faq details[open] summary::after { transform: translateY(-30%) rotate(-135deg); }
+  .faq .answer { padding: 0 0 20px; color: var(--ink-soft); }
+  .faq .answer p { margin: 0 0 0.8em; }
+  @media (prefers-reduced-motion: reduce) { .faq summary::after { transition: none; } html { scroll-behavior: auto; } }
+
+  /* Closing CTA */
+  .closing { text-align: left; }
+  .closing .wrap { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .closing h2 { margin: 0; max-width: 22ch; }
+
+  /* Footer */
+  .site-footer { border-top: 1px solid var(--rule); padding: 36px 0 48px; font-family: var(--sans); font-size: var(--step--1); color: var(--ink-soft); }
+  .site-footer .wrap { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+  .footer-links a { text-decoration: none; }
+  .footer-links a:hover { text-decoration: underline; color: var(--ink); }
+
+  /* Responsive */
+  @media (max-width: 960px) {
+    .hero .wrap { grid-template-columns: 1fr; }
+    .hero h1 { max-width: 18ch; }
+    .pricing { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 760px) {
+    .steps, .stages, .data-grid { grid-template-columns: 1fr; }
+    .site-nav a.plain { display: none; }
+    .ledger th, .ledger td { padding-left: 12px; padding-right: 12px; }
+    .ledger td { font-size: 0.9rem; }
+    .ledger-head, .ledger-foot { padding-left: 14px; padding-right: 14px; }
+  }
+  @media (max-width: 440px) {
+    .ledger th.published, .ledger td.published { display: none; }
+  }
+</style>
+</head>
+<body>
+<!--
+  SITE SETTINGS: edit the values in the SITE object in the <script> at the bottom of this file.
+  Every email link, the Stripe button, and the footer links are filled in from there.
+-->
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="wordmark" href="#top">The Applied Inference Lab</a>
+    <nav class="site-nav" aria-label="Main">
+      <a class="plain" href="#how">How it works</a>
+      <a class="plain" href="#pricing">Pricing</a>
+      <a class="plain" href="#faq">FAQ</a>
+      <a class="btn btn-primary btn-small" data-link="stripe" href="#pricing">Start a review</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <h1>Check every number in your paper before anyone else does.</h1>
+        <p class="lede">We rebuild your analysis from your data and methods, compare it against every number you report, then review whether your conclusions hold up.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" data-link="stripe" href="#pricing">Get a review for $99.99</a>
+          <a class="btn btn-secondary" data-link="free-eval" href="#pricing">Request a free evaluation</a>
+        </div>
+        <p class="hero-note">Per manuscript, with up to three passes for your revisions. Everything happens by email.</p>
+      </div>
+
+      <figure class="ledger" id="ledger" aria-labelledby="ledger-caption" style="margin:0">
+        <div class="ledger-head">
+          <strong>Reproduction check</strong>
+          <span>4 of 212 reported values</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Reported value</th>
+              <th scope="col" class="num published">Published</th>
+              <th scope="col" class="num">Reproduced</th>
+              <th scope="col" class="num">Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="item">Analytic sample<span>Figure 1, flowchart</span></td>
+              <td class="num published">9,412</td>
+              <td class="num reproduced" style="--i:0">9,412</td>
+              <td class="num check" style="--i:0"><span class="status match">Matches</span></td>
+            </tr>
+            <tr>
+              <td class="item">Adjusted OR<span>Table 2, model 3</span></td>
+              <td class="num published">1.42</td>
+              <td class="num reproduced" style="--i:1">1.42</td>
+              <td class="num check" style="--i:1"><span class="status match">Matches</span></td>
+            </tr>
+            <tr class="differs-row">
+              <td class="item">Prevalence<span>Women 50+, Table 3</span></td>
+              <td class="num published">12.8%</td>
+              <td class="num reproduced" style="--i:2">11.3%</td>
+              <td class="num check" style="--i:2"><span class="status differs">Differs</span></td>
+            </tr>
+            <tr>
+              <td class="item">95% CI<span>Table 2, model 3</span></td>
+              <td class="num published">1.18–1.71</td>
+              <td class="num reproduced" style="--i:3">1.18–1.71</td>
+              <td class="num check" style="--i:3"><span class="status match">Matches</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <figcaption class="ledger-foot" id="ledger-caption">Illustrative example. Your report traces each difference back to its cause, such as a transposed column or an exclusion the methods don't describe.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="evidence" aria-labelledby="evidence-claim">
+    <div class="wrap">
+      <p class="claim" id="evidence-claim">Errors in published papers are common. Peer review often misses them.</p>
+      <div class="support">
+        <p>A study of more than 250,000 p-values in eight major psychology journals found that half of the papers contained at least one p-value that didn't match its own test statistic. One in eight had an error large enough to change the statistical conclusion.</p>
+        <p>Those papers all passed peer review. Once yours is published, anyone can check it. Make sure it holds up first.</p>
+        <p class="source">Source: <a href="https://doi.org/10.3758/s13428-015-0664-2" rel="noopener">Nuijten et al. (2016), Behavior Research Methods</a></p>
+        <!-- Add your own figure here once an independent reviewer has validated it, scoped to what you checked, e.g.
+             <p>In our own checks of N recent papers analyzing public datasets, X% had at least one correction that affects a reported conclusion.</p> -->
+      </div>
+    </div>
+  </section>
+
+  <section class="block alt" id="how">
+    <div class="wrap">
+      <h2>How it works</h2>
+      <p class="intro">There's no account to create and no portal to learn. You pay once, send your files by email, and the report comes back the same way.</p>
+      <ol class="steps">
+        <li>
+          <h3>Pay for a review</h3>
+          <p>Check out securely through Stripe. Use the email address you'll send your manuscript from.</p>
+        </li>
+        <li>
+          <h3>Email your manuscript</h3>
+          <p>Send the manuscript, supplementary files, and your code if you have it. Tell us which dataset you used.</p>
+        </li>
+        <li>
+          <h3>Get your report</h3>
+          <p>You'll receive a written report by email. Reply with your revised draft for a second or third pass within 90 days.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="block" id="review">
+    <div class="wrap">
+      <h2>What the review covers</h2>
+      <p class="intro">Every review answers two separate questions, because a paper can pass the first and still fail the second.</p>
+      <div class="stages">
+        <div class="stage">
+          <p class="when">Part one</p>
+          <h3>Do your numbers reproduce?</h3>
+          <p>We write an independent implementation of your analysis from your data and methods section, then compare it with every value you report.</p>
+          <ul>
+            <li>Sample sizes and exclusions at each step</li>
+            <li>Estimates, intervals, and p-values in every table</li>
+            <li>Agreement between text, tables, and figures</li>
+            <li>If you share code, whether it does what your methods say</li>
+          </ul>
+        </div>
+        <div class="stage">
+          <p class="when">Part two</p>
+          <h3>Do your conclusions hold?</h3>
+          <p>We review whether the analysis supports what the paper claims, and where possible we run the corrected analysis to show what changes.</p>
+          <ul>
+            <li>Model specification, adjustment sets, and survey design</li>
+            <li>Variables that belong outside the model, such as mediators</li>
+            <li>Sparse categories and unstable estimates</li>
+            <li>Claims in the abstract that the results don't support</li>
+          </ul>
+        </div>
+      </div>
+      <p class="stages-note">Findings are ranked as major, moderate, or minor, each with a specific recommended edit. The code and outputs behind every finding are available to you on request.</p>
+    </div>
+  </section>
+
+  <section class="block alt" id="pricing">
+    <div class="wrap">
+      <h2>Pricing</h2>
+      <p class="intro">One price per manuscript, covering the original draft and two rounds of revisions.</p>
+      <div class="pricing">
+        <div class="plan main">
+          <h3>One manuscript</h3>
+          <p class="price">$99.99</p>
+          <p class="price-sub muted">Founding price</p>
+          <ul>
+            <li>Both parts of the review</li>
+            <li>Up to 3 passes within 90 days of your first submission</li>
+            <li>Written report with recommended edits</li>
+            <li>Supporting code and outputs on request</li>
+          </ul>
+          <a class="btn btn-primary" data-link="stripe" href="#pricing">Get a review</a>
+        </div>
+        <div class="plan">
+          <h3>Labs and groups</h3>
+          <p class="price-sub muted" style="margin-top:0.6em">Prepaid manuscript credits at a discount, paid by invoice.</p>
+          <ul class="muted">
+            <li>Credits are valid for 12 months</li>
+            <li>Any lab member you name can use them</li>
+            <li>Purchase orders accepted</li>
+          </ul>
+          <a class="btn btn-secondary" data-link="labs" href="#pricing">Ask for a quote</a>
+        </div>
+        <div class="plan">
+          <h3>Free evaluation</h3>
+          <p class="price-sub muted" style="margin-top:0.6em">See the depth of the review before you buy.</p>
+          <ul class="muted">
+            <li>One pass on a single section or key analysis</li>
+            <li>One free evaluation per author</li>
+            <li>Same email workflow as a full review</li>
+          </ul>
+          <a class="btn btn-secondary" data-link="free-eval" href="#pricing">Request a free evaluation</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="data">
+    <div class="wrap">
+      <h2>What we need from your data</h2>
+      <p class="intro">The full review depends on whether we can get the data you used. You never need to send us data your agreement doesn't allow you to share.</p>
+      <div class="data-grid">
+        <div class="data-card">
+          <h3>Public or registration-based data</h3>
+          <p>Datasets such as NHANES, DHS, CHARLS, or CDC WONDER. We obtain the data under our own access and run the full two-part review.</p>
+        </div>
+        <div class="data-card">
+          <h3>Restricted or private data</h3>
+          <p>We review your code and statistics against the manuscript without re-running on the data. Your report will say clearly which checks this covers.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block alt" id="faq">
+    <div class="wrap">
+      <h2>Questions</h2>
+      <div class="faq">
+        <details>
+          <summary>Who can submit a manuscript?</summary>
+          <div class="answer">
+            <p>Only an author of the manuscript. When you submit, you confirm that you're an author. We can't review papers sent by editors or peer reviewers, because most journals don't allow manuscripts under review to be shared.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Is my manuscript kept confidential?</summary>
+          <div class="answer">
+            <p>Yes. We don't share or publish anything about an unpublished manuscript. If your paper is published later, we'll only feature its review with your permission.</p>
+            <p>Your files are deleted <span data-text="retention">90 days after your last pass</span>.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Do you use AI?</summary>
+          <div class="answer">
+            <p>Yes. An AI-assisted pipeline builds the independent implementation and drafts the findings. A person reviews every report before it's sent to you.</p>
+          </div>
+        </details>
+        <details>
+          <summary>How long does a review take?</summary>
+          <div class="answer">
+            <p>Most reports arrive within <span data-text="turnaround">5 business days</span> of receiving your files. Revision passes are usually faster.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Does a clean report mean my paper will be accepted?</summary>
+          <div class="answer">
+            <p>No. The review checks whether your numbers reproduce and whether your analysis supports your conclusions. It doesn't predict what a journal or its reviewers will decide.</p>
+          </div>
+        </details>
+        <details>
+          <summary>What if my submission is very large?</summary>
+          <div class="answer">
+            <p>Very large submissions, such as extensive supplements with many models, may need a quote before we start. We'll tell you before any work begins.</p>
+          </div>
+        </details>
+        <details>
+          <summary>What if you can't run the review?</summary>
+          <div class="answer">
+            <p>If we can't get the data or can't run the analysis you describe, we'll tell you what we can check instead. If you'd rather not continue, you get a full refund.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="block closing">
+    <div class="wrap">
+      <h2>Find out whether your numbers reproduce.</h2>
+      <div class="hero-actions">
+        <a class="btn btn-primary" data-link="stripe" href="#pricing">Get a review for $99.99</a>
+        <a class="btn btn-secondary" data-link="free-eval" href="#pricing">Request a free evaluation</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <div>© <span id="year">2026</span> The Applied Inference Lab</div>
+      <div>Questions: <a data-link="contact" href="#">email us</a></div>
+    </div>
+    <nav class="footer-links" aria-label="Elsewhere">
+      <a data-link="substack" href="#">Substack</a>
+      <a data-link="zenodo" href="#">Reproduction catalog</a>
+      <a data-link="github" href="#">GitHub</a>
+      <a data-link="youtube" href="#">YouTube</a>
+      <a href="privacy.html">Privacy</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+  /* ===== SITE SETTINGS: edit these ===== */
+  const SITE = {
+    reviewEmail: "review@example.com",              // where manuscripts are sent
+    contactEmail: "hello@example.com",              // general questions and lab quotes
+    stripePaymentLink: "https://buy.stripe.com/aFaeVe5Eu84EgNs2At4F200",                          // e.g. https://buy.stripe.com/xxxx (leave "" until ready)
+    turnaround: "5 business days",
+    retention: "90 days after your last pass",
+    links: {
+      substack: "",                                 // leave "" to hide a link
+      zenodo: "",
+      github: "https://github.com/applied-inference-lab",
+      youtube: ""
+    }
+  };
+  /* ===================================== */
+
+  document.documentElement.classList.add("js");
+
+  const mailto = (to, subject, body) =>
+    "mailto:" + to + "?subject=" + encodeURIComponent(subject) + (body ? "&body=" + encodeURIComponent(body) : "");
+
+  const hrefs = {
+    stripe: SITE.stripePaymentLink || mailto(SITE.reviewEmail, "Manuscript review",
+      "Hi,\n\nI'd like a review of my manuscript. I'm an author of this paper.\n\nTitle:\nDataset(s) used:\nCode available (yes/no):\n"),
+    "free-eval": mailto(SITE.reviewEmail, "Free evaluation request",
+      "Hi,\n\nI'd like a free evaluation. I'm an author of this manuscript.\n\nTitle:\nSection or analysis to evaluate:\nDataset(s) used:\n"),
+    labs: mailto(SITE.contactEmail, "Lab pack quote",
+      "Hi,\n\nWe'd like a quote for prepaid manuscript reviews.\n\nLab or group:\nApproximate manuscripts per year:\nInvoice or PO requirements:\n"),
+    contact: mailto(SITE.contactEmail, "Question about reviews")
+  };
+
+  document.querySelectorAll("[data-link]").forEach(el => {
+    const key = el.dataset.link;
+    if (hrefs[key]) { el.href = hrefs[key]; return; }
+    const url = SITE.links[key];
+    if (url) { el.href = url; el.rel = "noopener"; }
+    else { el.remove(); }
+  });
+
+  document.querySelectorAll("[data-text]").forEach(el => {
+    const v = SITE[el.dataset.text];
+    if (v) el.textContent = v;
+  });
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  const ledger = document.getElementById("ledger");
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(entries => {
+      if (entries.some(e => e.isIntersecting)) { ledger.classList.add("run"); io.disconnect(); }
+    }, { threshold: 0.35 });
+    io.observe(ledger);
+  } else {
+    ledger.classList.add("run");
+  }
+</script>
+</body>
+</html>
